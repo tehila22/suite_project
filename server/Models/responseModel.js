@@ -9,6 +9,11 @@ const responseSchema = new mongoose.Schema({
         ref:'User',
         required:true,
     },
+    suiteId:{
+        type:mongoose.Schema.ObjectId,
+        ref:'Suite',
+        required:true
+    },
     prodDate:{
         type:Date,    
      },

@@ -13,20 +13,21 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { UserContext } from './Context';
-import { CardMedia } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // ייבוא useNavigate
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['דף הבית', 'הוספת צימר', 'Blog'];
+const settings = ['עריכת פרופיל', 'התנתקות'];
 
 function NavBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { currentUser } = React.useContext(UserContext);
-  console.log(currentUser);
+  const { currentUser, logout } = React.useContext(UserContext); // מקבל את המשתמש הנוכחי מהקונטקסט
+  const navigate = useNavigate();  // יצירת הניווט עם useNavigate
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -35,15 +36,33 @@ function NavBar() {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
+  const handleCloseUserMenu = (setting) => {
+    if (setting == 'התנתקות'){
+      logout();
+      navigate('/')
+    }
     setAnchorElUser(null);
   };
+
+  // ניווטים
+  const handleHomeClick = () => {
+    navigate('/show-suites');  // ניווט לעמוד show-suites
+  };
+
+  const handleAddNewSuiteClick = () => {
+    navigate('/add-new-suite');  // ניווט לעמוד add-new-suite
+  };
+
+  // רק אם יש currentUser, מוצגים ה-NavBar והלוגו
+  // if (!currentUser) {
+  //   return null; // לא מציג את ה-NavBar אם המשתמש לא מחובר
+  // }
 
   return (
     <>
       <img src={process.env.PUBLIC_URL + '/images/suitesLogo.png'} style={{ height: '180px', position: 'fixed' }} />
 
-      <AppBar position="static" sx={{ position: 'fixed', top: '0px', zIndex: 999, width: '80%', right: '0px', backgroundColor: 'white', boxShadow: 'none' }}>
+      <AppBar position="static" sx={{ position: 'fixed', top: '20px', zIndex: 999, width: '80%', right: '0px', backgroundColor: 'white', boxShadow: 'none' }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -58,7 +77,7 @@ function NavBar() {
                 fontFamily: 'monospace',
                 fontWeight: 700,
                 letterSpacing: '.3rem',
-                color: '#00B0FF',  // תכלת
+                color: '#00B0FF', // תכלת
                 textDecoration: 'none',
               }}
             >
@@ -74,7 +93,7 @@ function NavBar() {
                 onClick={handleOpenNavMenu}
                 color="inherit"
               >
-                <MenuIcon sx={{ color: '#00B0FF' }} /> {/* תכלת */}
+                <MenuIcon sx={{ color: '#00B0FF' }} />
               </IconButton>
               <Menu
                 id="menu-appbar"
@@ -94,13 +113,22 @@ function NavBar() {
               >
                 {pages.map((page) => (
                   <MenuItem key={page} onClick={handleCloseNavMenu}>
-                    <Typography sx={{ textAlign: 'center', color: '#00B0FF' }}>{page}</Typography> {/* תכלת */}
+                    {page === 'דף הבית' ? (
+                      <Typography sx={{ textAlign: 'center', color: '#00B0FF' }} onClick={handleHomeClick}>
+                        {page}
+                      </Typography>
+                    ) : page === 'הוספת צימר' ? (
+                      <Typography sx={{ textAlign: 'center', color: '#00B0FF' }} onClick={handleAddNewSuiteClick}>
+                        {page}
+                      </Typography>
+                    ) : (
+                      <Typography sx={{ textAlign: 'center', color: '#00B0FF' }}>{page}</Typography>
+                    )}
                   </MenuItem>
                 ))}
               </Menu>
             </Box>
             <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-
             <Typography
               variant="h5"
               noWrap
@@ -113,7 +141,7 @@ function NavBar() {
                 fontFamily: 'monospace',
                 fontWeight: 700,
                 letterSpacing: '.3rem',
-                color: '#00B0FF', // תכלת
+                color: '#00B0FF',
                 textDecoration: 'none',
               }}
             >
@@ -124,14 +152,24 @@ function NavBar() {
                 <Button
                   key={page}
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: '#00B0FF', display: 'block' }} // תכלת
+                  sx={{ my: 2, color: '#00B0FF', display: 'block' }}
                 >
-                  {page}
+                  {page === 'דף הבית' ? (
+                    <Typography sx={{ color: '#00B0FF' }} onClick={handleHomeClick}>
+                      {page}
+                    </Typography>
+                  ) : page === 'הוספת צימר' ? (
+                    <Typography sx={{ color: '#00B0FF' }} onClick={handleAddNewSuiteClick}>
+                      {page}
+                    </Typography>
+                  ) : (
+                    page
+                  )}
                 </Button>
               ))}
             </Box>
-            {
-              currentUser &&
+
+            {currentUser && (
               <Box sx={{ flexGrow: 0 }}>
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -155,17 +193,18 @@ function NavBar() {
                   onClose={handleCloseUserMenu}
                 >
                   {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography sx={{ textAlign: 'center', color: '#00B0FF' }}>{setting}</Typography> {/* תכלת */}
+                    <MenuItem key={setting} onClick={() => { console.log('click me'); handleCloseUserMenu(setting) }}>
+                      <Typography sx={{ textAlign: 'center', color: '#00B0FF' }}>{setting}</Typography>
                     </MenuItem>
                   ))}
                 </Menu>
               </Box>
-            }
+            )}
           </Toolbar>
         </Container>
       </AppBar>
     </>
   );
 }
+
 export default NavBar;

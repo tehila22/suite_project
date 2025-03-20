@@ -10,15 +10,18 @@ const userSchema = new mongoose.Schema({
     },
     password:{
        type:String,
+       required:true,
     },
     
     email:{
-        type:String,//להוסיף בדיקת תקינות
+         type:String,//להוסיף בדיקת תקינות
+         required:true,
+         match: [/\S+@\S+\.\S+/, 'Please provide a valid email address'],
     },
 
     type:{
         type:String,
-        
+       
     }
        
    })

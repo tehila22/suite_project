@@ -12,11 +12,18 @@ export const UserProvider = ({ children }) => {
         }
     }
 
+    const logout = ()=>{
+        setCurrentUser(null)
+    }
+    
+  
+
    
     return (
-       < UserContext.Provider value ={{currentUser,login}}>
+       < UserContext.Provider value ={{currentUser,login,logout}}>
         {children}
-       </UserContext.Provider>     
+       </UserContext.Provider>
+   
     )
 }
 
