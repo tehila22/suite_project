@@ -19,9 +19,11 @@ const pages = ['דף הבית', 'הוספת צימר', 'התחברות'];
 const settings = ['עריכת פרופיל', 'התנתקות'];
 
 function NavBar() {
+
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { currentUser, logout } = React.useContext(UserContext); // מקבל את המשתמש הנוכחי מהקונטקסט
+
   const navigate = useNavigate();  // יצירת הניווט עם useNavigate
 
   const handleOpenNavMenu = (event) => {
@@ -37,7 +39,7 @@ function NavBar() {
   };
 
   const handleCloseUserMenu = (setting) => {
-    if (setting == 'התנתקות'){
+    if (setting == 'התנתקות') {
       logout();
       navigate('/')
     }
@@ -52,22 +54,28 @@ function NavBar() {
   const handleAddNewSuiteClick = () => {
     navigate('/add-new-suite');  // ניווט לעמוד add-new-suite
   };
-  const Login = () => {
-    navigate('/');  // 
+  const handleLoginClick = () => {
+    navigate('/');  //ניווט לעמוד הבית
   };
-  // רק אם יש currentUser, מוצגים ה-NavBar והלוגו
-  // if (!currentUser) {
-  //   return null; // לא מציג את ה-NavBar אם המשתמש לא מחובר
-  // }
+
 
   return (
     <>
-      <img src={process.env.PUBLIC_URL + '/images/suitesLogo.png'} style={{ height: '180px', position: 'fixed' }} />
-
-      <AppBar position="static" sx={{ position: 'fixed', top: '20px', zIndex: 999, width: '80%', right: '0px', backgroundColor: 'white', boxShadow: 'none' }}>
+      <img
+        src={process.env.PUBLIC_URL + '/images/suitesLogo.png'}
+        style={{
+          left: '29px',
+          top: '647px',
+          opacity: '0.5',
+          borderRadius: '50%',
+          height: '262px',
+          position: 'fixed'
+        }}
+      />
+      <AppBar position="static" sx={{ position: 'fixed', zIndex: 999, backgroundColor: 'white', right: '0px', boxShadow: 'none' }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+            {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
             <Typography
               variant="h6"
               noWrap
@@ -84,7 +92,7 @@ function NavBar() {
               }}
             >
               LOGO
-            </Typography>
+            </Typography> */}
 
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
@@ -114,6 +122,19 @@ function NavBar() {
                 sx={{ display: { xs: 'block', md: 'none' } }}
               >
                 {pages.map((page) => (
+                  <MenuItem key={page} onClick={page === 'התחברות' ? handleLoginClick : handleCloseNavMenu}>
+                    <Typography sx={{ textAlign: 'center', color: '#00B0FF' }} >
+                      {page === 'דף הבית' ? (
+                        <span onClick={handleHomeClick}>{page}</span>
+                      ) : page === 'הוספת צימר' ? (
+                        <span onClick={handleAddNewSuiteClick}>{page}</span>
+                      ) : page}
+                    </Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+            {/* {pages.map((page) => (
                   <MenuItem key={page} onClick={handleCloseNavMenu}>
                     {page === 'דף הבית' ? (
                       <Typography sx={{ textAlign: 'center', color: '#00B0FF' }} onClick={handleHomeClick}>
@@ -123,16 +144,16 @@ function NavBar() {
                       <Typography sx={{ textAlign: 'center', color: '#00B0FF' }} onClick={handleAddNewSuiteClick}>
                         {page}
                       </Typography>
-                    ) :page==='התנתקות'? (
-                      <Typography sx={{ textAlign: 'center', color: '#00B0FF' }}onClick={Login}>
-                    {page}
+                    ) : page === 'התנתקות' ? (
+                      <Typography sx={{ textAlign: 'center', color: '#00B0FF' }} onClick={Login}>
+                        {page}
                       </Typography>
-                    ):null}
+                    ) : null}
                   </MenuItem>
                 ))}
               </Menu>
-            </Box>
-            <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+            </Box> */}
+            {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
             <Typography
               variant="h5"
               noWrap
@@ -150,8 +171,8 @@ function NavBar() {
               }}
             >
               LOGO
-            </Typography>
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+            </Typography> */}
+            {/* <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' },justifyContent: 'center' }}>
               {pages.map((page) => (
                 <Button
                   key={page}
@@ -166,14 +187,32 @@ function NavBar() {
                     <Typography sx={{ color: '#00B0FF' }} onClick={handleAddNewSuiteClick}>
                       {page}
                     </Typography>
-                  ) : page=='התחברות'?(
+                  ) : page == 'התחברות' ? (
                     <Typography sx={{ color: '#00B0FF' }} onClick={Login}>
-                    {page}
+                      {page}
+                    </Typography>
+                  ) : (
+                    page
+                  )}
+
+                </Button>
+              ))}
+            </Box> */}
+
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+              {pages.map((page) => (
+                <Button
+                  key={page}
+                  onClick={page === 'התחברות' ? handleLoginClick : handleCloseNavMenu}
+                  sx={{ my: 2, color: '#00B0FF', display: 'block' }}
+                >
+                  <Typography sx={{ color: '#00B0FF' }}>
+                    {page === 'דף הבית' ? (
+                      <span onClick={handleHomeClick}>{page}</span>
+                    ) : page === 'הוספת צימר' ? (
+                      <span onClick={handleAddNewSuiteClick}>{page}</span>
+                    ) : page}
                   </Typography>
-                    ) : (
-                      page
-                    )}
-                 
                 </Button>
               ))}
             </Box>

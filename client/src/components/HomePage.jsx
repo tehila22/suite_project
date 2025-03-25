@@ -3,12 +3,13 @@ import { TextField, Checkbox, FormControlLabel, Grid, Typography, Box, Paper, Sl
 import axios from 'axios';
 
 const HomePage = () => {
+
   const [suites, setSuites] = useState([]);
   const [filters, setFilters] = useState({
     accommodationType: '',
     areas: [],
     suitableFor: [],
-    classification: 0, // כאן אנחנו משתמשים במספר כדי לייצג את הציון
+    classification: 0,
     features: [],
     reviews: 0,
     units: 0,
@@ -70,7 +71,6 @@ const HomePage = () => {
       position: 'absolute',
       right: 0,
       top: '75px',
-
       height: '100vh',
       overflowY: 'auto',
     }}>
