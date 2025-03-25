@@ -15,7 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { UserContext } from './Context';
 import { useNavigate } from 'react-router-dom'; // ייבוא useNavigate
 
-const pages = ['דף הבית', 'הוספת צימר', 'Blog'];
+const pages = ['דף הבית', 'הוספת צימר', 'התחברות'];
 const settings = ['עריכת פרופיל', 'התנתקות'];
 
 function NavBar() {
@@ -52,7 +52,9 @@ function NavBar() {
   const handleAddNewSuiteClick = () => {
     navigate('/add-new-suite');  // ניווט לעמוד add-new-suite
   };
-
+  const Login = () => {
+    navigate('/');  // 
+  };
   // רק אם יש currentUser, מוצגים ה-NavBar והלוגו
   // if (!currentUser) {
   //   return null; // לא מציג את ה-NavBar אם המשתמש לא מחובר
@@ -121,9 +123,11 @@ function NavBar() {
                       <Typography sx={{ textAlign: 'center', color: '#00B0FF' }} onClick={handleAddNewSuiteClick}>
                         {page}
                       </Typography>
-                    ) : (
-                      <Typography sx={{ textAlign: 'center', color: '#00B0FF' }}>{page}</Typography>
-                    )}
+                    ) :page==='התנתקות'? (
+                      <Typography sx={{ textAlign: 'center', color: '#00B0FF' }}onClick={Login}>
+                    {page}
+                      </Typography>
+                    ):null}
                   </MenuItem>
                 ))}
               </Menu>
@@ -162,9 +166,14 @@ function NavBar() {
                     <Typography sx={{ color: '#00B0FF' }} onClick={handleAddNewSuiteClick}>
                       {page}
                     </Typography>
-                  ) : (
-                    page
-                  )}
+                  ) : page=='התחברות'?(
+                    <Typography sx={{ color: '#00B0FF' }} onClick={Login}>
+                    {page}
+                  </Typography>
+                    ) : (
+                      page
+                    )}
+                 
                 </Button>
               ))}
             </Box>

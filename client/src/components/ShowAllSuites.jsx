@@ -5,11 +5,17 @@ import { useNavigate } from 'react-router-dom';
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
 
 export default function ShowAllSuites({ suites }) {
-    const navigate = useNavigate();  // הפונקציה שמבצעת את הניווט
+    const navigate = useNavigate();
 
+    // הפונקציה שמבצעת את הניווט
     const handleCardClick = (id) => {
         console.log("Navigating to suite with id:", id);  // לבדוק אם הפונקציה נקראת
         navigate(`/suite/${id}`);
+    };
+
+    const handleUpdateClick = (id) => {
+        console.log("Navigating to update suite with id:", id);  // לבדוק אם הפונקציה נקראת
+        navigate(`/update-suite/${id}`);  // שינוי כאן
     };
 
     return (
@@ -39,17 +45,23 @@ export default function ShowAllSuites({ suites }) {
                                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                                         {suite.description}
                                     </Typography>
-                                    {/* <Button
-                                        onClick={(e) => {
-                                            e.stopPropagation(); // מונע את פעולת הלחיצה על ה-Card עצמו כשאנחנו לוחצים על הכפתור
-                                            handleCardClick(suite._id);
-                                        }}
-                                    >
-                                        אני רוצה לראות יותר
-                                        <UnfoldMoreIcon />
-                                    </Button> */}
                                 </CardContent>
                             </CardActionArea>
+                            {/* כפתור עדכון צימר */}
+                            <Button
+                                onClick={(e) => {
+                                    e.stopPropagation(); // מונע את פעולת הלחיצה על ה-Card עצמו כשאנחנו לוחצים על הכפתור
+                                    handleUpdateClick(suite._id);
+                                }}
+                                sx={{
+                                    width: '100%',
+                                    borderTop: '1px solid #ddd',
+                                    padding: '10px 0',
+                                    textTransform: 'none',
+                                }}
+                            >
+                                עדכון הצימר
+                            </Button>
                         </Card>
                     ))}
                 </Box>

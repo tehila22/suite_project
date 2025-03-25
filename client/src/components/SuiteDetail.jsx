@@ -509,11 +509,9 @@
 //     </Box>
 //   );
 // }
-
-
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Box, Typography, TextField, Card, CardContent, InputAdornment, IconButton } from "@mui/material";
+import { useParams, useNavigate } from "react-router-dom";
+import { Box, Typography, TextField, Card, CardContent, InputAdornment, IconButton, Button } from "@mui/material";
 import axios from "axios";
 import SendIcon from '@mui/icons-material/Send';  // אייקון שליחה
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded'; // אייקון פח
@@ -521,6 +519,7 @@ import { UserContext } from "./Context";
 
 export default function SuiteDetail() {
   const { id } = useParams();  // שולף את ה-ID מהנתיב
+  const navigate = useNavigate();  // עבור ניווט לעמודים אחרים
   const { currentUser } = useContext(UserContext);
   console.log('currentUser', currentUser);
 
@@ -553,9 +552,14 @@ export default function SuiteDetail() {
   const handleMessageSubmit = async (e) => {
     e.preventDefault();
 
+    if (!currentUser) {
+      console.error("User is not logged in!");
+      return;
+    }
+
     const response = {
       suiteId: id,
-      userId: currentUser._id,
+      userId: currentUser._id,  // נוודא ש-currentUser לא null
       responseContent: newMessage,
     };
 
@@ -576,7 +580,6 @@ export default function SuiteDetail() {
     try {
       const res = await axios.delete(`http://localhost:5000/response/${responseId}`);
       if (res.status === 200) {
-        // עדכון המצב בממשק - מחיקת התגובה
         setResponses((prevResponses) => prevResponses.filter(response => response._id !== responseId));
       }
     } catch (error) {
@@ -628,6 +631,17 @@ export default function SuiteDetail() {
         <Typography variant="body1"><strong>מיטות:</strong> {suite.numBeds}</Typography>
         <Typography variant="body1"><strong>מחיר ללילה:</strong> {suite.nightPrice}</Typography>
       </Box>
+
+      {/* כפתור עדכון */}
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={() => navigate(`/update-suite/${id}`)}  // ניווט לעמוד העדכון
+        sx={{ mt: 2 }}
+      >
+        עדכן צימר
+      </Button>
+
       {/* הוספת תגובה חדשה */}
       <Typography variant="h6" sx={{ mt: 3, textAlign: 'right' }}>הוסף תגובה חדשה</Typography>
       <form onSubmit={handleMessageSubmit}>
@@ -652,6 +666,7 @@ export default function SuiteDetail() {
           />
         </Box>
       </form>
+
       {/* הצגת תגובות */}
       <Box sx={{ mt: 2, textAlign: 'right' }}>
         {responses.length === 0 ? (
@@ -659,7 +674,6 @@ export default function SuiteDetail() {
         ) : (
           responses.map((response, index) => (
             <Card key={index} sx={{ mb: 2, p: 2, backgroundColor: '#f0f0f0', borderRadius: 2, boxShadow: 1 }}>
-              {console.log('response', response)}
               <CardContent>
                 <Typography variant="body2" color="textSecondary">({response.userId.name})</Typography>
                 <Typography variant="body1" sx={{ fontStyle: 'italic' }}>{response.responseContent}</Typography>
@@ -667,15 +681,16 @@ export default function SuiteDetail() {
               </CardContent>
               {/* כפתור מחיקה */}
               {
-                currentUser._id ==response.userId._id &&
-                <IconButton
-                  onClick={() => handleDeleteResponse(response._id)}
-                  sx={{ position: 'relative', top: 10, right: 10, color: '' }}>
-                  <DeleteForeverRoundedIcon />
-                </IconButton>
-                }
+                currentUser && currentUser._id === response.userId._id && (
+                  <IconButton
+                    onClick={() => handleDeleteResponse(response._id)}
+                    sx={{ position: 'relative', top: 10, right: 10 }}>
+                    <DeleteForeverRoundedIcon />
+                  </IconButton>
+                )
+              }
             </Card>
-        ))
+          ))
         )}
       </Box>
     </Box>
