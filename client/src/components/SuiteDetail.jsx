@@ -691,6 +691,9 @@ export default function SuiteDetail() {
               }
             </Card>
           ))
+
+
+          
         )}
       </Box>
     </Box>
