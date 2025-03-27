@@ -473,7 +473,7 @@ export default function FilterSuites() {
                 </Box>
             </Drawer>
 
-            <ShowAllSuites suites={suites} />
+            <ShowAllSuites suites={suites} setSuites={setSuites} />
         </>
     );
 }

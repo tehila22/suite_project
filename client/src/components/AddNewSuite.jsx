@@ -1,28 +1,25 @@
-
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Checkbox, FormControl } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { UserContext } from './Context';
 import Avatar from '@mui/material/Avatar';
 
-
 export default function AddNewSuite() {
-
     const [suiteData, setSuiteData] = useState({
         jacuzzi: false,
         pool: false
-    })
+    });
 
+    const [alertText, setAlertText] = useState(""); // הוספת state עבור אזהרת השגיאה או הצלחה
+    const navigate = useNavigate();
 
     const handleSubmit = async () => {
-
         console.log(suiteData);
         let formData = new FormData();
         formData.append('name', suiteData.name);
@@ -35,36 +32,28 @@ export default function AddNewSuite() {
         formData.append('pool', suiteData.pool);
         formData.append('jacuzzi', suiteData.jacuzzi);
 
-
         if (suiteData.image) {
             formData.append('image', suiteData.image); // הוספת התמונה
         }
-    
+
         try {
             const response = await axios.post('http://localhost:5000/suite', formData, {
                 headers: {
                     'content-type': 'multipart/form-data', // חשוב להוסיף את כותרת התוכן הזו
                 },
             });
-    
-            // אתה יכול להוסיף כאן טיפול בתגובה
-            console.log(response.data);
+
+            // אם הצימר נוסף בהצלחה
+            setAlertText("הצימר נוסף בהצלחה!");
+            setTimeout(() => {
+                setAlertText("");  // ניקוי ההודעה אחרי 3 שניות
+                navigate('/show-suites'); // לדף הצימרים
+            }, 3000);
         } catch (err) {
             console.error(err);
+            setAlertText("שגיאה בהוספת הצימר, נסה שוב.");
         }
-    
-      
-        
-
-        // try {
-        // const response = await axios.post('http://localhost:5000/suite', formData , {     
-        //     headers: { 'content-type': 'multipart/form-data' }
-        // } );
-        // } catch (err) {
-        //     console.error(err);
-        //     setAlertText("משתמש זה לא קיים במערכת");
-        // }
-    }
+    };
 
     return (
         <>
@@ -80,19 +69,10 @@ export default function AddNewSuite() {
                     top: '144px'
                 }}
             >
-                {/* <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                > */}
                 <Avatar
                     sx={{
                         margin: 1,
                         backgroundColor: 'Highlight',
-
-                        // backgroundColor: (theme) => theme.palette.secondary.main,
                     }}
                 >
                     <LockOutlinedIcon />
@@ -113,7 +93,7 @@ export default function AddNewSuite() {
                                 variant="outlined"
                                 required
                                 fullWidth
-                                id="userName"
+                                id="name"
                                 label="שם"
                                 name="name"
                                 autoComplete="name"
@@ -139,9 +119,9 @@ export default function AddNewSuite() {
                                 variant="outlined"
                                 required
                                 fullWidth
-                                id="userName"
+                                id="city"
                                 label="עיר"
-                                city="city"
+                                name="city"
                                 autoComplete="city"
                                 onChange={(e) => { setSuiteData({ ...suiteData, city: e.target.value }); }}
                                 value={suiteData.city}
@@ -152,9 +132,9 @@ export default function AddNewSuite() {
                                 variant="outlined"
                                 required
                                 fullWidth
-                                id="userName"
+                                id="address"
                                 label="כתובת"
-                                address="address"
+                                name="address"
                                 autoComplete="address"
                                 onChange={(e) => { setSuiteData({ ...suiteData, address: e.target.value }); }}
                                 value={suiteData.address}
@@ -166,28 +146,20 @@ export default function AddNewSuite() {
                                 required
                                 fullWidth
                                 label="מ'ס חדרים"
-                                numRooms="numRooms"
-                                autoComplete="numRooms"
-                                type="number"  // הוספת מאפיין type
-                                onChange={(e) => {
-                                    setSuiteData({ ...suiteData, numRooms: e.target.value });
-
-                                }}
+                                name="numRooms"
+                                type="number"
+                                onChange={(e) => { setSuiteData({ ...suiteData, numRooms: e.target.value }); }}
                                 value={suiteData.numRooms}
                             />
                         </Grid>
-
-
                         <Grid item xs={12}>
                             <TextField
                                 variant="outlined"
                                 required
                                 fullWidth
-                                name="password"
                                 label="מ'ס מיטות"
+                                name="numBeds"
                                 type="number"
-                                //   id="password"
-                                autoComplete="current-password"
                                 onChange={(e) => { setSuiteData({ ...suiteData, numBeds: e.target.value }); }}
                                 value={suiteData.numBeds}
                             />
@@ -197,11 +169,9 @@ export default function AddNewSuite() {
                                 variant="outlined"
                                 required
                                 fullWidth
-                                name="password"
                                 label="מחיר"
-                                type="Number"
-                                id="password"
-                                autoComplete="current-password"
+                                name="nightPrice"
+                                type="number"
                                 onChange={(e) => { setSuiteData({ ...suiteData, nightPrice: e.target.value }); }}
                                 value={suiteData.nightPrice}
                             />
@@ -210,29 +180,26 @@ export default function AddNewSuite() {
                         <Grid item xs={12}>
                             בריכה
                             <Checkbox checked={suiteData.pool} onChange={(e) => { setSuiteData({ ...suiteData, pool: e.target.checked }); }} />
-
                         </Grid>
                         <Grid item xs={12}>
                             ג'קוזי
                             <Checkbox checked={suiteData.jacuzzi} onChange={(e) => { setSuiteData({ ...suiteData, jacuzzi: e.target.checked }); }} />
-
                         </Grid>
-                                                <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            label="תמונה"
-                            name="image"
-                            autoComplete="image"
-                            type="file"
-                            onChange={(e) => {
-                                setSuiteData({ ...suiteData, image: e.target.files[0] }); // כאן אנחנו שומרים את הקובץ שנבחר
-                            }}
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                label="תמונה"
+                                name="image"
+                                autoComplete="image"
+                                type="file"
+                                onChange={(e) => {
+                                    setSuiteData({ ...suiteData, image: e.target.files[0] });
+                                }}
                             />
-
-                                                
-
-                       </Grid>
+                        </Grid>
+                    </Grid>
                     <Button
                         type="button"
                         fullWidth
@@ -246,13 +213,10 @@ export default function AddNewSuite() {
                         אישור
                     </Button>
 
+                    {/* הצגת אזהרת שגיאה או הצלחה אם יש */}
+                    {alertText && <Alert variant="outlined" severity={alertText.includes("בהצלחה") ? "success" : "error"}>{alertText}</Alert>}
                 </form>
-
-                {/* הצגת אזהרת שגיאה אם יש */}
-                {/* {alertText !== "" && <Alert variant='outlined' severity='error'>{alertText}</Alert>} */}
-                {/* </div> */}
             </Container>
         </>
-
     );
 }

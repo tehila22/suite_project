@@ -8,6 +8,7 @@ import FilterSuites from "./FilterSuites";
 import AddNewSuite from "./AddNewSuite";
 import SuiteDetail from "./SuiteDetail"; // הרכיב שמציג את הצימר הנבחר
 import UpdateSuite from "./UpdateSuite"; // עדכון הנתיב
+import EditProfile from "./EditProfile";
 
 export default function RouteComponent() {
     return (
@@ -22,6 +23,7 @@ export default function RouteComponent() {
                 <Route path='/suite/:id' element={<SuiteDetail />} />
                 {/* עדכון הנתיב ל-update-suite/:id */}
                 <Route path='/update-suite/:id' element={<UpdateSuite />} />
+                <Route path="/edit-profile" element={<EditProfile />} />
             </Routes>
         </BrowserRouter>
     );

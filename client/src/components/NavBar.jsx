@@ -12,23 +12,19 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { UserContext } from './Context';
-import { useNavigate } from 'react-router-dom'; // ייבוא useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const settings = ['עריכת פרופיל', 'התנתקות'];
 
 function NavBar() {
-
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { currentUser, logout } = React.useContext(UserContext); // מקבל את המשתמש הנוכחי מהקונטקסט
+  const { currentUser, logout } = React.useContext(UserContext);
 
   let pages = ['התחברות', 'דף הבית'];
-  if (currentUser?.type == "admin")
-    pages = ['התחברות', 'דף הבית', 'הוספת צימר']
-  console.log('current-user', currentUser);
+  if (currentUser?.type === 'admin') pages = ['התחברות', 'דף הבית', 'הוספת צימר'];
 
-
-  const navigate = useNavigate();  // יצירת הניווט עם useNavigate
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -43,23 +39,25 @@ function NavBar() {
   };
 
   const handleCloseUserMenu = (setting) => {
-    if (setting == 'התנתקות') {
+    if (setting === 'התנתקות') {
       logout();
-      navigate('/')
+      navigate('/');
+    } else if (setting === 'עריכת פרופיל') {
+      navigate('/edit-profile'); // ניווט לעמוד עריכת פרופיל
     }
     setAnchorElUser(null);
   };
 
-  // ניווטים
   const handleHomeClick = () => {
-    navigate('/show-suites');  // ניווט לעמוד show-suites
+    navigate('/show-suites');
   };
 
   const handleAddNewSuiteClick = () => {
-    navigate('/add-new-suite');  // ניווט לעמוד add-new-suite
+    navigate('/add-new-suite');
   };
+
   const handleLoginClick = () => {
-    navigate('/');  //ניווט לעמוד הבית
+    navigate('/');
   };
 
   return (
@@ -72,14 +70,21 @@ function NavBar() {
           opacity: '0.5',
           borderRadius: '50%',
           height: '190px',
-          position: 'fixed'
+          position: 'fixed',
         }}
       />
 
-
-      {
-        currentUser &&
-        <AppBar position="static" sx={{ position: 'fixed', zIndex: 999, backgroundColor: 'white', right: '0px', boxShadow: 'none' }}>
+      {currentUser && (
+        <AppBar
+          position="static"
+          sx={{
+            position: 'fixed',
+            zIndex: 999,
+            backgroundColor: 'white',
+            right: '0px',
+            boxShadow: 'none',
+          }}
+        >
           <Container maxWidth="xl">
             <Toolbar disableGutters>
               <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -109,14 +114,19 @@ function NavBar() {
                   onClose={handleCloseNavMenu}
                   sx={{ display: { xs: 'block', md: 'none' } }}
                 >
-                  {pages.map((page, index) => (
-                    <MenuItem key={page} onClick={page === 'התחברות' ? handleLoginClick : handleCloseNavMenu}>
-                      <Typography sx={{ textAlign: 'center', color: '#00B0FF' }} >
+                  {pages.map((page) => (
+                    <MenuItem
+                      key={page}
+                      onClick={page === 'התחברות' ? handleLoginClick : handleCloseNavMenu}
+                    >
+                      <Typography sx={{ textAlign: 'center', color: '#00B0FF' }}>
                         {page === 'דף הבית' ? (
                           <span onClick={handleHomeClick}>{page}</span>
                         ) : page === 'הוספת צימר' ? (
                           <span onClick={handleAddNewSuiteClick}>{page}</span>
-                        ) : page}
+                        ) : (
+                          page
+                        )}
                       </Typography>
                     </MenuItem>
                   ))}
@@ -135,11 +145,13 @@ function NavBar() {
                           <span onClick={handleHomeClick}>{page}</span>
                         ) : page === 'הוספת צימר' ? (
                           <span onClick={handleAddNewSuiteClick}>{page}</span>
-                        ) : page}
+                        ) : (
+                          page
+                        )}
                       </Typography>
                     </Button>
                     {index < pages.length - 1 && (
-                      <Typography sx={{ color: '#00B0FF', mx: 1, paddingTop: '22px' }}>|</Typography> // הוספתי את padding-top כאן
+                      <Typography sx={{ color: '#00B0FF', mx: 1, paddingTop: '22px' }}>|</Typography>
                     )}
                   </React.Fragment>
                 ))}
@@ -169,8 +181,13 @@ function NavBar() {
                     onClose={handleCloseUserMenu}
                   >
                     {settings.map((setting) => (
-                      <MenuItem key={setting} onClick={() => { console.log('click me'); handleCloseUserMenu(setting) }}>
-                        <Typography sx={{ textAlign: 'center', color: '#00B0FF' }}>{setting}</Typography>
+                      <MenuItem
+                        key={setting}
+                        onClick={() => handleCloseUserMenu(setting)}
+                      >
+                        <Typography sx={{ textAlign: 'center', color: '#00B0FF' }}>
+                          {setting}
+                        </Typography>
                       </MenuItem>
                     ))}
                   </Menu>
@@ -179,8 +196,7 @@ function NavBar() {
             </Toolbar>
           </Container>
         </AppBar>
-
-      }
+      )}
     </>
   );
 }
