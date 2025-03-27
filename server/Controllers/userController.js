@@ -50,7 +50,7 @@ const addUser = async (req, res) => {
     console.log("newUser",newUser);
     
     await newUser.save()
-        .then(() => res.send({ "User created!": newUser }))//אם הצלחת
+        .then(() => res.send({message: "User created!", user: newUser }))//אם הצלחת
         .catch(err => res.status(400).send({ "Error": err }))// אם לא הצלחת
 }
 

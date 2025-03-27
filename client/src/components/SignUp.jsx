@@ -5,15 +5,17 @@ import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Container } from '@mui/system';
+import { UserContext } from './Context';
 
 export default function SignUp() {
 
   const navigate = useNavigate();
+  const {login}=useContext(UserContext);
 
   const [userData, setUserData] = useState({
     name: "",
@@ -31,6 +33,8 @@ export default function SignUp() {
 
     try {
       const response = await axios.post('http://localhost:5000/user/', userData);
+      console.log(response.data);
+      login(response.data?.user);
       navigate('/show-suites');
     } catch (err) {
       console.error(err);

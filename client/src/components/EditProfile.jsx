@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import { Container } from '@mui/system';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function EditProfile() {
   const { currentUser, updateUser } = useContext(UserContext); // מקבלים את המשתמש מהקונטקסט
@@ -20,24 +21,39 @@ export default function EditProfile() {
     password: ''
   });
 
+
+
   useEffect(() => {
     if (currentUser) {
       // טוען את פרטי המשתמש הנוכחי לקלטים
       setUserData({
         name: currentUser.name || '',
         email: currentUser.email || '',
-        password: '' // לא נרצה להציג סיסמא קיימת
+        password: currentUser.password || '' // לא נרצה להציג סיסמא קיימת
       });
     } else {
       navigate('/'); // אם אין משתמש מחובר, מחזירים לדף הבית
     }
   }, [currentUser, navigate]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async(e) => {
+    console.log('in handle submit!');
+    
+    e.preventDefault();
+    try {
+          const res = await axios.put(`http://localhost:5000/user/${currentUser?._id}`,userData);
+          if (res.status === 200) {
+            console.log("user updated successfully");
+            // navigate(`/user/${id}`);  // נווטים לעמוד הצימר המעודכן
+          }
+        } catch (err) {
+          console.error("Error updating user:", err);
+        }
+    
     updateUser(userData); // עדכון פרטי המשתמש בקונטקסט
     navigate('/show-suites'); // ניווט לדף הצימרים אחרי עדכון
   };
-
+  
   return (
     <div
       style={{
