@@ -19,7 +19,11 @@ const settings = ['עריכת פרופיל', 'התנתקות'];
 function NavBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { currentUser, logout } = React.useContext(UserContext);
+  // const { currentUser, logout } = React.useContext(UserContext);
+  const { logout } = React.useContext(UserContext);
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  console.log('current user local storage',currentUser);
+  
 
   let pages = ['התחברות', 'דף הבית'];
   if (currentUser?.type === 'admin') pages = ['התחברות', 'דף הבית', 'הוספת צימר'];
@@ -65,8 +69,9 @@ function NavBar() {
       <img
         src={process.env.PUBLIC_URL + '/images/suitesLogo.png'}
         style={{
+          zIndex:999,
           left: '18px',
-          top: '465px',
+          top: '533px',
           opacity: '0.5',
           borderRadius: '50%',
           height: '190px',

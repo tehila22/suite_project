@@ -8,12 +8,14 @@ export const UserProvider = ({ children }) => {
   // פונקציה להכנסת משתמש לאחר התחברות
   const login = (user) => {
     if (user) {
+      localStorage.setItem("currentUser",JSON.stringify(user))
       setCurrentUser(user);
     }
   };
 
   // פונקציה להתנתקות המשתמש
   const logout = () => {
+    localStorage.setItem("currentUser", JSON.stringify(null));
     setCurrentUser(null);
   };
 

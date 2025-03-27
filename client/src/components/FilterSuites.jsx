@@ -312,6 +312,7 @@ export default function FilterSuites() {
 
     return (
         <>
+        
             {/* הכפתור לפתיחת הסינון */}
             {/* <Button variant="contained" color="primary" onClick={toggleDrawer(true)} sx={{ position: 'fixed', top: '20px', right: '20px', zIndex: 1000 }}>
                 סינון

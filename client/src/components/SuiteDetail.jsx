@@ -592,7 +592,7 @@ export default function SuiteDetail() {
   }
 
   return (
-    <Box sx={{ maxWidth: 800, margin: '0 auto', padding: 2, backgroundColor: '#f9f9f9', borderRadius: 2, boxShadow: 2 }}>
+    <Box sx={{position:'relative',top:'83px', maxWidth: 800, margin: '0 auto', padding: 2, backgroundColor: '#f9f9f9', borderRadius: 2, boxShadow: 2 }}>
       {/* הצגת פרטי הצימר */}
       <Box sx={{ position: 'relative' }}>
         <img
@@ -632,7 +632,7 @@ export default function SuiteDetail() {
         <Typography variant="body1"><strong>מחיר ללילה:</strong> {suite.nightPrice}</Typography>
       </Box>
 
-      {/* כפתור עדכון */}
+      {/* כפתור עדכון
       <Button
         variant="contained"
         color="secondary"
@@ -640,7 +640,7 @@ export default function SuiteDetail() {
         sx={{ mt: 2 }}
       >
         עדכן צימר
-      </Button>
+      </Button> */}
 
       {/* הוספת תגובה חדשה */}
       <Typography variant="h6" sx={{ mt: 3, textAlign: 'right' }}>הוסף תגובה חדשה</Typography>

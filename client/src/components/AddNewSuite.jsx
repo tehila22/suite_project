@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, Checkbox, FormControl } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Avatar from '@mui/material/Avatar';
+import HouseIcon from '@mui/icons-material/House';
 
 export default function AddNewSuite() {
     const [suiteData, setSuiteData] = useState({
@@ -57,10 +58,25 @@ export default function AddNewSuite() {
 
     return (
         <>
+            <div
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100vh',
+                    backgroundImage: `url(${process.env.PUBLIC_URL}/images/nof.jpg)`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    opacity: 0.2,
+                    zIndex: -1
+                }}
+            ></div>
             <Container
                 component="main"
                 maxWidth="xs"
                 style={{
+                    textAlign:'center',
                     backgroundColor: 'white', // הרקע של הטופס יהיה לבן
                     padding: '32px', // ריווח פנימי לטופס
                     borderRadius: '8px', // רדיוס פינות לפינות רכות
@@ -75,9 +91,9 @@ export default function AddNewSuite() {
                         backgroundColor: 'Highlight',
                     }}
                 >
-                    <LockOutlinedIcon />
+                    <HouseIcon />
                 </Avatar>
-                <Typography component="h1" variant="h5">
+                <Typography sx={{color:'#0078d7'}} component="h1" variant="h5">
                     הוספת צימר
                 </Typography>
                 <form
