@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import { Container } from '@mui/system';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useNavigate } from 'react-router-dom';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import axios from 'axios';
 
 export default function EditProfile() {
@@ -55,14 +56,29 @@ export default function EditProfile() {
   };
   
   return (
-    <div
-      style={{
-        height: '100vh',
-        backgroundImage: `url(${process.env.PUBLIC_URL}/images/nof.jpg)`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}
-    >
+    // <div
+    //   style={{
+    //     height: '100vh',
+    //     backgroundImage: `url(${process.env.PUBLIC_URL}/images/nof.jpg)`,
+    //     backgroundSize: 'cover',
+    //     backgroundPosition: 'center'
+    //   }}
+    // >
+    <>
+          <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100vh',
+          backgroundImage: `url(${process.env.PUBLIC_URL}/images/nof.jpg)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.2,
+          zIndex: -1
+        }}
+      ></div>
       <CssBaseline />
 
       <Container
@@ -85,7 +101,7 @@ export default function EditProfile() {
           }}
         >
           <Avatar sx={{ margin: 1, backgroundColor: 'Highlight' }}>
-            <LockOutlinedIcon />
+            <AccountBoxIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             עריכת פרופיל
@@ -155,6 +171,8 @@ export default function EditProfile() {
           </form>
         </div>
       </Container>
-    </div>
+      {/* </div> */}
+    </>
+
   );
 }

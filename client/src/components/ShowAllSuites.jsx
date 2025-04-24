@@ -204,7 +204,7 @@ export default function ShowAllSuites({ suites ,setSuites}) {
 
       {/* דיאלוג לאישור מחיקה */}
       <Dialog sx={{textAlign:'right'}} open={openDialog} onClose={cancelDelete}>
-        <DialogTitle>? האם אתה בטוח</DialogTitle>
+        {/* <DialogTitle>? האם אתה בטוח</DialogTitle> */}
         <DialogContent>
           <Typography variant="body1">? אתה בטוח שברצונך למחוק צימר זה</Typography>
         </DialogContent>

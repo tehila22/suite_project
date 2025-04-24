@@ -33,16 +33,28 @@ const deleteSuite = async (req, res) => {
         .catch(err => res.status(500).send({ "error ! can't delete this zimmer": err }))
 }
 const updateSuite = async (req, res) => {
-    await Suite.findByIdAndUpdate(req.params.id, req.body, { new: true })
-        .then(t => {
-            if (!t)
-                return res.status(404).json("zimmer not found!")
-            res.json({ "zimmer updated": t })
-        })
-        .catch(error =>
-            res.status(500).json({ "error in server": error })
-        )
-}
+    const updateData = req.body;
+
+    // אם יש קובץ תמונה חדש
+    if (req.file) {
+        // עדכון ה-image בנתונים החדשים
+        updateData.image = req.file.filename;
+    }
+    console.log(updateData);
+    
+
+    try {
+        const updatedSuite = await Suite.findByIdAndUpdate(req.params.id, updateData, { new: true });
+
+        if (!updatedSuite) {
+            return res.status(404).json("zimmer not found!");
+        }
+
+        res.json({ "zimmer updated": updatedSuite });
+    } catch (error) {
+        res.status(500).json({ "error in server": error });
+    }
+};
 
 
 const addSuite = async (req, res) => {

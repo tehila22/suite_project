@@ -5,6 +5,9 @@ const cors = require('cors');
 const suiteRouter = require('./Routers/suiteRouter');
 const userRouter = require('./Routers/userRouter');
 const responseRouter = require('./Routers/responseRouter');
+const bookingRouter = require('./Routers/bookingRouter');
+
+
 
 const app = express();
 
@@ -24,6 +27,8 @@ app.use('/uploads', express.static('uploads'));
 app.use('/suite', suiteRouter)
 app.use('/user', userRouter)
 app.use('/response', responseRouter)
+app.use('/booking', bookingRouter);
+
 
 
 
