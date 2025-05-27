@@ -51,12 +51,27 @@
 //   );
 // };
 
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+
+  // 🔄 טעינת משתמש מ-localStorage כשנטענת האפליקציה
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem("currentUser");
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser) {
+          setCurrentUser(parsedUser);
+        }
+      }
+    } catch (error) {
+      console.error("שגיאה בטעינת המשתמש מה-localStorage:", error);
+    }
+  }, []);
 
   // פונקציה להכנסת משתמש לאחר התחברות
   const login = (user) => {
@@ -68,7 +83,7 @@ export const UserProvider = ({ children }) => {
 
   // פונקציה להתנתקות המשתמש
   const logout = () => {
-    localStorage.setItem("currentUser", JSON.stringify(null));
+    localStorage.removeItem("currentUser");
     setCurrentUser(null);
   };
 

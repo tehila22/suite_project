@@ -30,6 +30,7 @@ export default function AddNewSuite() {
         formData.append('numRooms', suiteData.numRooms);
         formData.append('numBeds', suiteData.numBeds);
         formData.append('nightPrice', suiteData.nightPrice);
+        formData.append('floor',suiteData.floor);
         formData.append('pool', suiteData.pool);
         formData.append('jacuzzi', suiteData.jacuzzi);
 
@@ -154,6 +155,18 @@ export default function AddNewSuite() {
                                 autoComplete="address"
                                 onChange={(e) => { setSuiteData({ ...suiteData, address: e.target.value }); }}
                                 value={suiteData.address}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                label="מספר קומות"
+                                name="floor"
+                                type="number"
+                                onChange={(e) => { setSuiteData({ ...suiteData, floor: e.target.value }); }}
+                                value={suiteData.floor}
                             />
                         </Grid>
                         <Grid item xs={12}>

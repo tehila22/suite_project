@@ -9,6 +9,7 @@ import SuiteDetail from "./SuiteDetail"; // הרכיב שמציג את הצימ�
 import UpdateSuite from "./UpdateSuite"; // עדכון הנתיב
 import EditProfile from "./EditProfile";
 import BookingForm from "./BookingForm";
+import MyOrders from "./MyOrders";
 
 export default function RouteComponent() {
     return (
@@ -25,6 +26,8 @@ export default function RouteComponent() {
                 <Route path='/update-suite/:id' element={<UpdateSuite />} />
                 <Route path="/edit-profile" element={<EditProfile />} />
                 <Route path="/booking/:id" element={<BookingForm />} />
+                <Route path="/myorders" element={<MyOrders />} />
+
             </Routes>
         </BrowserRouter>
     );

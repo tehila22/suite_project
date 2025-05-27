@@ -12,14 +12,29 @@ const bookingRouter = require('./Routers/bookingRouter');
 const app = express();
 
 // חיבור למסד הנתונים (לפי הכתובת שלך)
-mongoose.connect('mongodb://localhost:27017/suiteDB')
-.then(() => {
-    console.log('Connected to MongoDB');
-})
-.catch((err) => {
-    console.error('Failed to connect to MongoDB', err);
-});
+// mongoose.connect('mongodb://localhost:27017/suiteDB')
+// .then(() => {
+//     console.log('Connected to MongoDB');
+// })
+// .catch((err) => {
+//     console.error('Failed to connect to MongoDB', err);
+// });
 
+
+// mongoose.connect('mongodb+srv://tehila9221:vpahvoRhiqMTlUoY@cluster0.dx2fexm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+// .then(() => {
+//     console.log('Connected to MongoDB');
+// })
+// .catch((err) => {
+//     console.error('Failed to connect to MongoDB', err);
+// });
+mongoose.connect('mongodb+srv://tehila9221:vpahvoRhiqMTlUoY@cluster0.dx2fexm.mongodb.net/suiteDB?retryWrites=true&w=majority&appName=Cluster0')
+  .then(() => {
+    console.log('✅ Connected to MongoDB Atlas');
+  })
+  .catch((err) => {
+    console.error('❌ Failed to connect to MongoDB Atlas:', err);
+  });
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));

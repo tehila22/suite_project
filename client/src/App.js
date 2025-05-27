@@ -1,6 +1,7 @@
 import './App.css';
 import { UserProvider } from './components/Context';
 import RouteComponent from './components/RouteComponent';
+import MyOrders from './components/MyOrders';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <UserProvider>
         <RouteComponent/>
       </UserProvider>
+      {/* <MyOrders/> */}
     </div>
   );
 }
