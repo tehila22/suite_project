@@ -10,29 +10,34 @@ export default function FilterSuites({open,toggleDrawer,filters,cities,handleCha
  {
   return (
     <>
-      <Box
-        onClick={toggleDrawer(true)}
-        sx={{
-          position: 'absolute',
-          top: '12px',
-          left: '17px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          cursor: 'pointer',
-          border: '2px solid black',
-          backgroundColor: '#f0f0f0',
-          padding: '8px 16px',
-          borderRadius: '8px',
-          transition: 'all 0.3s ease',
-          '&:hover': {
-            backgroundColor: 'lightgreen',
-          },
-        }}
-      >
-        <FilterListOutlinedIcon />
-        <Typography variant="subtitle1">סינון</Typography>
-      </Box>
+    <Box
+  onClick={toggleDrawer(true)}
+  sx={{
+    position: 'absolute',
+    top: '12px',
+    left: '17px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+    cursor: 'pointer',
+    backgroundColor: 'rgba(33, 150, 243, 0.1)', // כחול שקוף
+    padding: '6px 12px',
+    borderRadius: '10px',
+    border: '1px solid rgba(33, 150, 243, 0.5)',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+    transition: 'all 0.3s ease-in-out',
+    '&:hover': {
+      backgroundColor: 'rgba(33, 150, 243, 0.2)', // כחול שקוף יותר מודגש
+      transform: 'scale(1.03)',
+    },
+  }}
+>
+  <FilterListOutlinedIcon sx={{ color: '#2196f3' }} />
+  <Typography variant="subtitle2" sx={{ color: '#2196f3', fontWeight: 500 }}>
+    סינון
+  </Typography>
+</Box>
+
 
       <Drawer
         anchor="right"

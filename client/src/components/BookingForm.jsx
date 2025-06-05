@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { format } from "date-fns";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -14,27 +15,45 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import { styled } from "@mui/material/styles";
 import axios from "axios";
 import { UserContext } from "./Context";
-import { jsPDF } from "jspdf";
-import "jspdf-autotable";
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import heLocale from 'date-fns/locale/he';
 
-// import { jsPDF } from "jspdf";
-// import davidFont from '../fonts/David-Regular.ttf';  // נתיב נכון לגופן שלך
+const OrangeDay = styled('div')(({ theme }) => ({
+  backgroundColor: 'orange',
+  borderRadius: '50%',
+  color: 'white',
+  width: 36,
+  height: 36,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
 
-
-
+const BlueDay = styled('div')(({ theme }) => ({
+  backgroundColor: 'blue',
+  borderRadius: '50%',
+  color: 'white',
+  width: 36,
+  height: 36,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
 
 export default function BookingForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useContext(UserContext);
+  console.log('currentUser', currentUser);
+
   const [suite, setSuite] = useState(null);
   const [formData, setFormData] = useState({
-    fullName: "",
+    fullName: currentUser ? currentUser.name : "",
     phone: "",
     checkInDate: "",
     checkOutDate: "",
@@ -48,21 +67,7 @@ export default function BookingForm() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [bookingDetails, setBookingDetails] = useState(null);
-  const [bookedRanges, setBookedRanges] = useState();
-
-  // useEffect(() => {
-  //   const fetchSuite = async () => {
-  //     try {
-  //       const res = await axios.get(`http://localhost:5000/suite/${id}`);
-  //       setSuite(res.data);
-  //     } catch (err) {
-  //       console.error("Error fetching suite:", err);
-  //     }
-  //   };
-  //   fetchSuite();
-  // }, [id]);
-
-
+  const [bookedRanges, setBookedRanges] = useState([]);
 
   useEffect(() => {
     const fetchSuiteAndBookings = async () => {
@@ -71,11 +76,11 @@ export default function BookingForm() {
         setSuite(suiteRes.data);
 
         const bookingsRes = await axios.get(`http://localhost:5000/booking/suite/${id}`);
-        const ranges = bookingsRes.data.map((booking) => ({
-          start: new Date(booking.checkInDate),
-          end: new Date(booking.checkOutDate),
+        const bookingsWithDates = bookingsRes.data.map(({ startDate, endDate }) => ({
+          start: new Date(startDate),
+          end: new Date(endDate),
         }));
-        setBookedRanges(ranges);
+        setBookedRanges(bookingsWithDates);
       } catch (err) {
         console.error("Error fetching suite or bookings:", err);
       }
@@ -87,62 +92,6 @@ export default function BookingForm() {
     calculateNightsAndPrice();
   }, [formData.checkInDate, formData.checkOutDate, suite]);
 
-
-  const getTodayDate = () => {
-    const today = new Date();
-    return today.toISOString().split("T")[0];
-  };
-
-  const isDateBooked = (date) => {
-    return bookedRanges?.some(({ start, end }) => {
-      const d = new Date(date);
-      d.setHours(0, 0, 0, 0);
-      return d >= start && d < end;
-    });
-  };
-
-
-  const calculateNightsAndPrice = () => {
-    const { checkInDate, checkOutDate } = formData;
-    if (checkInDate && checkOutDate) {
-      const inDate = new Date(checkInDate);
-      const outDate = new Date(checkOutDate);
-      const diffTime = outDate - inDate;
-      const nights = diffTime / (1000 * 60 * 60 * 24);
-      setNumNights(nights > 0 ? nights : 0);
-      if (suite?.nightPrice) {
-        setTotalPrice(nights * suite.nightPrice);
-      }
-    } else {
-      setNumNights(0);
-      setTotalPrice(0);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "cardNumber") {
-      const formattedCardNumber = value.replace(/\D/g, '').replace(/(.{4})(?=.)/g, '$1 ');
-      setFormData((prev) => ({ ...prev, [name]: formattedCardNumber }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
-
-  const validateDates = () => {
-    const { checkInDate, checkOutDate } = formData;
-    const checkIn = new Date(checkInDate);
-    const checkOut = new Date(checkOutDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    let newErrors = {};
-    if (!checkInDate) newErrors.checkInDate = "יש לבחור תאריך כניסה";
-    else if (checkIn < today) newErrors.checkInDate = "תאריך הכניסה לא יכול להיות בעבר";
-    if (!checkOutDate) newErrors.checkOutDate = "יש לבחור תאריך יציאה";
-    else if (checkOut <= checkIn) newErrors.checkOutDate = "תאריך היציאה חייב להיות אחרי תאריך הכניסה";
-    return newErrors;
-  };
 
   const isValidLuhn = (number) => {
     let sum = 0;
@@ -158,6 +107,24 @@ export default function BookingForm() {
     }
     return sum % 10 === 0;
   };
+
+
+
+  const validateDates = () => {
+    const { checkInDate, checkOutDate } = formData;
+    const checkIn = new Date(checkInDate);
+    const checkOut = new Date(checkOutDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let newErrors = {};
+    if (!checkInDate) newErrors.checkInDate = "יש לבחור תאריך כניסה";
+    else if (checkIn < today) newErrors.checkInDate = "תאריך הכניסה לא יכול להיות בעבר";
+    if (!checkOutDate) newErrors.checkOutDate = "יש לבחור תאריך יציאה";
+    else if (checkOut <= checkIn) newErrors.checkOutDate = "תאריך היציאה חייב להיות אחרי תאריך הכניסה";
+    return newErrors;
+  };
+
+
 
   const validatePayment = () => {
     const { paymentMethod, cardNumber, cardExpiry, cardCvc } = formData;
@@ -207,8 +174,13 @@ export default function BookingForm() {
       numNights,
       totalPrice,
     };
+    console.log(booking);
+
     try {
+      console.log("http://localhost:5000/booking", booking);
+
       const res = await axios.post("http://localhost:5000/booking", booking);
+
       if (res.status === 200 || res.status === 201) {
         setBookingDetails(booking);
         setOpenSnackbar(true);
@@ -219,22 +191,48 @@ export default function BookingForm() {
     }
   };
 
-  const getBase64FromUrl = async (url) => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        console.log("Image loaded as Base64:", reader.result);  // לוג
-        resolve(reader.result);
-      };
-      reader.onerror = (err) => {
-        console.error("Error loading image:", err);
-        reject(err);
-      };
-      reader.readAsDataURL(blob);
+
+  const isDateBooked = (date) => {
+    if (!bookedRanges) return false;
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return bookedRanges.some(({ start, end }) => {
+      const startCopy = new Date(start);
+      const endCopy = new Date(end);
+      startCopy.setHours(0, 0, 0, 0);
+      endCopy.setHours(0, 0, 0, 0);
+      return d >= startCopy && d <= endCopy;
     });
   };
+
+  const calculateNightsAndPrice = () => {
+    const { checkInDate, checkOutDate } = formData;
+    if (checkInDate && checkOutDate) {
+      const inDate = new Date(checkInDate);
+      const outDate = new Date(checkOutDate);
+      const diffTime = outDate - inDate;
+      const nights = diffTime / (1000 * 60 * 60 * 24);
+      setNumNights(nights > 0 ? nights : 0);
+      if (suite?.nightPrice) {
+        setTotalPrice(nights * suite.nightPrice);
+      }
+    } else {
+      setNumNights(0);
+      setTotalPrice(0);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "cardNumber") {
+      const formattedCardNumber = value.replace(/\D/g, '').replace(/(.{4})(?=.)/g, '$1 ');
+      setFormData((prev) => ({ ...prev, [name]: formattedCardNumber }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
 
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
@@ -242,6 +240,9 @@ export default function BookingForm() {
   };
 
   if (!suite) return <Typography>טוען פרטי צימר...</Typography>;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   return (
     <>
@@ -272,6 +273,7 @@ export default function BookingForm() {
           top: "144px",
         }}
       >
+        {console.log(formData.fullName)}
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Typography component="h1" variant="h5" gutterBottom align="center">
             טופס הזמנת צימר - {suite.name}
@@ -280,7 +282,7 @@ export default function BookingForm() {
             <TextField
               label="שם מלא"
               name="fullName"
-              value={formData.fullName == "" ? currentUser.name : formData.fullName}
+              value={formData.fullName}
               onChange={handleChange}
               fullWidth
               required
@@ -302,8 +304,35 @@ export default function BookingForm() {
               <DatePicker
                 label="תאריך כניסה"
                 value={formData.checkInDate ? new Date(formData.checkInDate) : null}
-                onChange={(newValue) => handleChange({ target: { name: "checkInDate", value: newValue?.toISOString().split("T")[0] || "" } })}
-                shouldDisableDate={(date) => isDateBooked(date) || date < new Date()}
+                onChange={(newValue) =>
+                  handleChange({
+                    target: {
+                      name: "checkInDate",
+                      value: newValue ? format(newValue, "yyyy-MM-dd") : "",
+                    },
+                  })
+                }
+                shouldDisableDate={(date) => isDateBooked(date) || date < today}
+                renderDay={(day, _value, DayComponentProps) => {
+                  const d = new Date(day);
+                  d.setHours(0, 0, 0, 0);
+                  if (isDateBooked(d)) {
+                    return (
+                      <OrangeDay {...DayComponentProps}>
+                        {day.getDate()}
+                      </OrangeDay>
+                    );
+                  }
+                  if (d < today) {
+                    return (
+                      <BlueDay {...DayComponentProps}>
+                        {day.getDate()}
+                      </BlueDay>
+                    );
+                  }
+                  return <PickersDay {...DayComponentProps} />;
+                  ;
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -320,10 +349,42 @@ export default function BookingForm() {
               <DatePicker
                 label="תאריך יציאה"
                 value={formData.checkOutDate ? new Date(formData.checkOutDate) : null}
-                onChange={(newValue) => handleChange({ target: { name: "checkOutDate", value: newValue?.toISOString().split("T")[0] || "" } })}
+                onChange={(newValue) =>
+                  handleChange({
+                    target: {
+                      name: "checkOutDate",
+                      value: newValue ? format(newValue, "yyyy-MM-dd") : "",
+                    },
+                  })
+                }
                 shouldDisableDate={(date) => {
-                  const checkIn = new Date(formData.checkInDate);
-                  return isDateBooked(date) || date <= checkIn;
+                  const checkIn = formData.checkInDate ? new Date(formData.checkInDate) : null;
+                  if (!date) return false;
+                  const d = new Date(date);
+                  d.setHours(0, 0, 0, 0);
+                  if (isDateBooked(d)) return true;
+                  if (checkIn && d <= checkIn) return true;
+                  if (d < today) return true;
+                  return false;
+                }}
+                renderDay={(day, _value, DayComponentProps) => {
+                  const d = new Date(day);
+                  d.setHours(0, 0, 0, 0);
+                  if (isDateBooked(d)) {
+                    return (
+                      <OrangeDay {...DayComponentProps}>
+                        {day.getDate()}
+                      </OrangeDay>
+                    );
+                  }
+                  if (d < today) {
+                    return (
+                      <BlueDay {...DayComponentProps}>
+                        {day.getDate()}
+                      </BlueDay>
+                    );
+                  }
+                  return <PickersDay {...DayComponentProps} />;
                 }}
                 renderInput={(params) => (
                   <TextField
@@ -339,66 +400,51 @@ export default function BookingForm() {
               />
             </LocalizationProvider>
 
+            <Typography variant="body1" gutterBottom>
+              מספר לילות: {numNights}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              מחיר סופי: {totalPrice.toLocaleString()} ₪
+            </Typography>
 
-            {/* <TextField
-              label="תאריך כניסה"
-              name="checkInDate"
-              type="date"
-              value={formData.checkInDate}
-              onChange={handleChange}
-              fullWidth
-              required
-              error={!!errors.checkInDate}
-              helperText={errors.checkInDate}
-              sx={{ mb: 2 }}
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ dir: "rtl", min: getTodayDate() }}
-            />
-            <TextField
-              label="תאריך יציאה"
-              name="checkOutDate"
-              type="date"
-              value={formData.checkOutDate}
-              onChange={handleChange}
-              fullWidth
-              required
-              error={!!errors.checkOutDate}
-              helperText={errors.checkOutDate}
-              sx={{ mb: 3 }}
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ dir: "rtl", min: formData.checkInDate || getTodayDate() }}
-            /> */}
-            <FormControl fullWidth required sx={{ mb: 3 }}>
-              <InputLabel>אמצעי תשלום</InputLabel>
-              <Select label="אמצעי תשלום" name="paymentMethod" value={formData.paymentMethod} onChange={handleChange}>
-                <MenuItem value="creditCard">כרטיס אשראי</MenuItem>
-                <MenuItem value="paypal">פייפאל</MenuItem>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel id="payment-method-label">אמצעי תשלום</InputLabel>
+              <Select
+                labelId="payment-method-label"
+                label="אמצעי תשלום"
+                name="paymentMethod"
+                value={formData.paymentMethod}
+                onChange={handleChange}
+                required
+                dir="rtl"
+              >
+                <MenuItem value="card">כרטיס אשראי</MenuItem>
+                <MenuItem value="cash">פייפאל</MenuItem>
               </Select>
             </FormControl>
-            {formData.paymentMethod === "creditCard" && (
+
+            {formData.paymentMethod === "card" && (
               <>
                 <TextField
-                  label="מספר כרטיס אשראי"
+                  label="מספר כרטיס"
                   name="cardNumber"
                   value={formData.cardNumber}
                   onChange={handleChange}
                   fullWidth
                   required
-                  error={!!errors.cardNumber}
-                  helperText={errors.cardNumber}
                   sx={{ mb: 2 }}
+                  inputProps={{ maxLength: 19, dir: "ltr" }}
                 />
                 <TextField
-                  label="תוקף כרטיס (MM/YY)"
+                  label="תוקף"
                   name="cardExpiry"
                   value={formData.cardExpiry}
                   onChange={handleChange}
                   fullWidth
                   required
-                  error={!!errors.cardExpiry}
-                  helperText={errors.cardExpiry}
-                  placeholder="MM/YY"
                   sx={{ mb: 2 }}
+                  placeholder="MM/YY"
+                  inputProps={{ maxLength: 5, dir: "ltr" }}
                 />
                 <TextField
                   label="CVC"
@@ -407,37 +453,33 @@ export default function BookingForm() {
                   onChange={handleChange}
                   fullWidth
                   required
-                  error={!!errors.cardCvc}
-                  helperText={errors.cardCvc}
-                  sx={{ mb: 3 }}
+                  sx={{ mb: 2 }}
+                  inputProps={{ maxLength: 4, dir: "ltr" }}
                 />
               </>
             )}
-            {numNights > 0 && (
-              <Box sx={{ mb: 3, textAlign: "right" }}>
-                <Typography variant="body1">סה"כ לילות: {numNights}</Typography>
-                <Typography variant="body1">מחיר ללילה: ₪{suite.nightPrice}</Typography>
-                <Typography variant="h6" fontWeight="bold">סה"כ לתשלום: ₪{numNights * suite.nightPrice}</Typography>
-              </Box>
-            )}
-            <Button type="submit" variant="contained" color="primary" fullWidth>אשר הזמנה</Button>
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              disabled={!currentUser}
+            >
+              שלח הזמנה
+            </Button>
           </form>
         </Box>
       </Container>
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
-        {/* <Button onClick={()=>window.print()}>Print</Button> */}
-        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-          <Typography variant="h6">ההזמנה בוצעה בהצלחה!</Typography>
-          <Typography variant="body2">שם: {formData.fullName}</Typography>
-          <Typography variant="body2">טלפון: {formData.phone}</Typography>
-          <Typography variant="body2">תאריך כניסה: {formData.checkInDate}</Typography>
-          <Typography variant="body2">תאריך יציאה: {formData.checkOutDate}</Typography>
-          <Typography variant="body1">סה"כ לילות: {numNights}</Typography>
-          <Typography variant="body1">מחיר ללילה: ₪{suite.nightPrice}</Typography>
-          <Typography variant="h6" fontWeight="bold">סה"כ לתשלום: ₪{numNights * suite.nightPrice}</Typography>
-          <Box sx={{ textAlign: "left", mt: 2 }}>
-            <Button onClick={() => window.print()} variant="outlined">הדפס</Button>
-          </Box>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity="success" onClose={handleSnackbarClose}>
+          ההזמנה הושלמה בהצלחה!
         </Alert>
       </Snackbar>
     </>

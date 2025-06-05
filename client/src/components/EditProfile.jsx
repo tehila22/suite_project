@@ -107,68 +107,83 @@ export default function EditProfile() {
             עריכת פרופיל
           </Typography>
           <form
-            style={{
-              width: '100%',
-              marginTop: '24px'
-            }}
-            noValidate
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  autoComplete="fname"
-                  name="firstName"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="userName"
-                  label="שם משתמש"
-                  autoFocus
-                  onChange={(e) => setUserData({ ...userData, name: e.target.value })}
-                  value={userData.name}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="מייל"
-                  name="email"
-                  autoComplete="email"
-                  onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-                  value={userData.email}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="סיסמא"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  onChange={(e) => setUserData({ ...userData, password: e.target.value })}
-                  value={userData.password}
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="button"
-              fullWidth
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-              sx={{
-                marginTop: '24px'
-              }}
-            >
-              שמור שינויים
-            </Button>
-          </form>
+  style={{
+    width: '100%',
+    marginTop: '24px'
+  }}
+  noValidate
+>
+  <Grid container spacing={2}>
+    <Grid item xs={12}>
+      <TextField
+        autoComplete="fname"
+        name="firstName"
+        variant="outlined"
+        required
+        fullWidth
+        id="userName"
+        label="שם משתמש"
+        autoFocus
+        onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+        value={userData.name}
+      />
+    </Grid>
+    <Grid item xs={12}>
+      <TextField
+        variant="outlined"
+        required
+        fullWidth
+        id="email"
+        label="מייל"
+        name="email"
+        autoComplete="email"
+        onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+        value={userData.email}
+      />
+    </Grid>
+    <Grid item xs={12}>
+      <TextField
+        variant="outlined"
+        required
+        fullWidth
+        name="password"
+        label="סיסמא"
+        type="password"
+        id="password"
+        autoComplete="current-password"
+        onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+        value={userData.password}
+      />
+    </Grid>
+  </Grid>
+
+  <Grid container spacing={2} sx={{ marginTop: '24px' }}>
+    <Grid item xs={6}>
+      <Button
+        type="button"
+        fullWidth
+        variant="outlined"
+        color="secondary"
+        onClick={() => navigate('/show-suites')} // או navigate(-1) כדי לחזור לדף הקודם
+      >
+        ביטול
+      </Button>
+    </Grid>
+    <Grid item xs={6}>
+      <Button
+        type="button"
+        fullWidth
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}
+      >
+        שמור שינויים
+      </Button>
+    </Grid>
+  </Grid>
+</form>
+
+          
         </div>
       </Container>
       {/* </div> */}

@@ -5,17 +5,17 @@ import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
 import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { Alert } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Container } from '@mui/system';
 import { UserContext } from './Context';
 
 export default function SignUp() {
-
   const navigate = useNavigate();
-  const {login}=useContext(UserContext);
+  const { login } = useContext(UserContext);
 
   const [userData, setUserData] = useState({
     name: "",
@@ -23,207 +23,101 @@ export default function SignUp() {
     password: ""
   });
 
+  const [alertText, setAlertText] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const validateForm = () => {
+    let newErrors = {};
+
+    if (!userData.name.trim()) {
+      newErrors.name = "יש להזין שם משתמש";
+    } else if (userData.name.trim().length < 2) {
+      newErrors.name = "השם חייב להכיל לפחות 2 תווים";
+    }
+
+    if (!userData.email.trim()) {
+      newErrors.email = "יש להזין מייל";
+    } else if (!validateEmail(userData.email)) {
+      newErrors.email = "כתובת המייל אינה תקינה";
+    }
+
+    if (!userData.password) {
+      newErrors.password = "יש להזין סיסמה";
+    } else if (userData.password.length < 4) {
+      newErrors.password = "הסיסמא חייבת להכיל לפחות 4 תווים";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
-    console.log(userData);
-    setUserData({
-      name: "",
-      email: "",
-      password: ""
-    });
+    setAlertText("");
+
+    if (!validateForm()) {
+      return;
+    }
 
     try {
       const response = await axios.post('http://localhost:5000/user/', userData);
-      console.log(response.data);
       login(response.data?.user);
       navigate('/show-suites');
     } catch (err) {
       console.error(err);
+      setAlertText("שגיאה במהלך ההרשמה. נסה שוב.");
     }
   };
 
   return (
-    //     // כאן אנחנו מגדירים את התמונה כרקע של כל העמוד
-    //     <div 
-    //       style={{
-    //         height: '100vh', // תופס את כל גובה המסך
-    //         backgroundImage: `url(${process.env.PUBLIC_URL}/images/nof.jpg)`, // מיקום התמונה
-    //         backgroundSize: 'cover', // התמונה ממלאת את כל הרקע
-    //         backgroundPosition: 'center', // מיקום התמונה במרכז
-    //       }}
-    //     >
-    //       <CssBaseline />
-
-    //       {/* ה-Container עכשיו יהיה עם רקע לבן */}
-    //       <div
-    //         style={{
-    //           display: 'flex',
-    //           flexDirection: 'column',
-    //           alignItems: 'center',
-    //           position:'relative',
-    //           top:'144px'
-    //         }}
-    //       >
-    //         <Avatar
-    //           sx={{
-    //             margin: 1,
-    //             backgroundColor: (theme) => theme.palette.secondary.main,
-    //           }}
-    //         >
-    //           <LockOutlinedIcon />
-    //         </Avatar>
-    //         <Typography component="h1" variant="h5">
-    //           הרשמה
-    //         </Typography>
-
-    //         {/* כאן אנחנו מציבים את הטופס עם רקע לבן */}
-    //         {/* <div
-    //           style={{
-    //             backgroundColor: 'white', // הרקע של הטופס יהיה לבן
-    //             padding: '32px', // ריווח פנימי לטופס
-    //             borderRadius: '8px', // רדיוס פינות לפינות רכות
-    //             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // צלליות לטופס
-    //             width: '100%',
-    //             maxWidth: '400px', // הגבלת רוחב הטופס
-    //           }}
-    //         > */}
-    //           <form
-    //             style={{
-    //               width: '100%',
-    //               marginTop: '24px', // ריווח
-    //             }}
-    //             noValidate
-    //           >
-    //             <Grid container spacing={2}>
-    //               <Grid item xs={12}>
-    //                 <TextField
-    //                   autoComplete="fname"
-    //                   name="firstName"
-    //                   variant="outlined"
-    //                   required
-    //                   fullWidth
-    //                   id="userName"
-    //                   label="שם משתמש"
-    //                   autoFocus
-    //                   onChange={(e) => setUserData({ ...userData, name: e.target.value })}
-    //                   value={userData.name}
-    //                 />
-    //               </Grid>
-    //               <Grid item xs={12}>
-    //                 <TextField
-    //                   variant="outlined"
-    //                   required
-    //                   fullWidth
-    //                   id="email"
-    //                   label="מייל"
-    //                   name="email"
-    //                   autoComplete="email"
-    //                   onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-    //                   value={userData.email}
-    //                 />
-    //               </Grid>
-    //               <Grid item xs={12}>
-    //                 <TextField
-    //                   variant="outlined"
-    //                   required
-    //                   fullWidth
-    //                   name="password"
-    //                   label="סיסמא"
-    //                   type="password"
-    //                   id="password"
-    //                   autoComplete="current-password"
-    //                   onChange={(e) => setUserData({ ...userData, password: e.target.value })}
-    //                   value={userData.password}
-    //                 />
-    //               </Grid>
-    //             </Grid>
-    //             <Button
-    //               type="button"
-    //               fullWidth
-    //               variant="contained"
-    //               color="primary"
-    //               sx={{
-    //                 marginTop: '24px', // ריווח
-    //               }}
-    //               onClick={handleSubmit}
-    //             >
-    //               אישור
-    //             </Button>
-    //             <Grid container justifyContent="flex-end">
-    //               <Grid item>
-    //                 <Link href="/" variant="body2">
-    //                   יש לך חשבון קיים? לחץ כאן להתחברות
-    //                 </Link>
-    //               </Grid>
-    //             </Grid>
-    //           </form>
-    //         {/* </div> */}
-    //       </div>
-    //     </div>
-    //   );
-    // }
-
-    // כאן אנחנו מגדירים את התמונה כרקע של כל העמוד
     <div
       style={{
-        height: '100vh', // תופס את כל גובה המסך
-        backgroundImage: `url(${process.env.PUBLIC_URL}/images/nof.jpg)`, // מיקום התמונה
-        backgroundSize: 'cover', // התמונה ממלאת את כל הרקע
-        backgroundPosition: 'center', // מיקום התמונה במרכז
+        height: '100vh',
+        backgroundImage: `url(${process.env.PUBLIC_URL}/images/nof.jpg)`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
       }}
     >
       <CssBaseline />
-
-      {/* ה-Container עכשיו יהיה עם רקע לבן */}
       <Container
         component="main"
         maxWidth="xs"
         style={{
-          backgroundColor: 'white', // הרקע של הטופס יהיה לבן
-          padding: '32px', // ריווח פנימי לטופס
-          borderRadius: '8px', // רדיוס פינות לפינות רכות
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // צלליות לטופס
+          backgroundColor: 'white',
+          padding: '32px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
           position: 'relative',
           top: '144px'
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar
-            sx={{
-              margin: 1,
-              backgroundColor: 'Highlight',
-            }}
-          >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Avatar sx={{ margin: 1, backgroundColor: 'Highlight' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
-            הרשמה
-          </Typography>
-          <form
-            style={{
-              width: '100%',
-              marginTop: '24px', // ריווח
-            }}
-            noValidate
-          >
+          <Typography component="h1" variant="h5">הרשמה</Typography>
+          <form style={{ width: '100%', marginTop: '24px' }} noValidate>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  autoComplete="fname"
-                  name="firstName"
+                  name="name"
                   variant="outlined"
                   required
                   fullWidth
                   id="userName"
                   label="שם משתמש"
                   autoFocus
-                  onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                  onChange={(e) => {
+                    setUserData({ ...userData, name: e.target.value });
+                    setErrors({ ...errors, name: "" });
+                  }}
                   value={userData.name}
+                  error={!!errors.name}
+                  helperText={errors.name}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -235,8 +129,13 @@ export default function SignUp() {
                   label="מייל"
                   name="email"
                   autoComplete="email"
-                  onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                  onChange={(e) => {
+                    setUserData({ ...userData, email: e.target.value });
+                    setErrors({ ...errors, email: "" });
+                  }}
                   value={userData.email}
+                  error={!!errors.email}
+                  helperText={errors.email}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -249,22 +148,30 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="current-password"
-                  onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+                  onChange={(e) => {
+                    setUserData({ ...userData, password: e.target.value });
+                    setErrors({ ...errors, password: "" });
+                  }}
                   value={userData.password}
+                  error={!!errors.password}
+                  helperText={errors.password}
                 />
               </Grid>
             </Grid>
+            {alertText && (
+              <Alert severity="error" style={{ marginTop: '16px' }}>
+                {alertText}
+              </Alert>
+            )}
             <Button
               type="button"
               fullWidth
               variant="contained"
               color="primary"
               onClick={handleSubmit}
-              sx={{
-                marginTop: '24px',
-              }}
+              sx={{ marginTop: '24px' }}
             >
-              כניסה
+              הרשמה
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
@@ -274,9 +181,6 @@ export default function SignUp() {
               </Grid>
             </Grid>
           </form>
-
-          {/* הצגת אזהרת שגיאה אם יש */}
-          {/* {alertText !== "" && <Alert variant='outlined' severity='error'>{alertText}</Alert>} */}
         </div>
       </Container>
     </div>

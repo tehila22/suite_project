@@ -77,7 +77,7 @@
 //             sx={{
 //               margin: 1,
 //               backgroundColor: 'Highlight',
-              
+
 //               // backgroundColor: (theme) => theme.palette.secondary.main,
 //             }}
 //           >
@@ -160,7 +160,7 @@ import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Alert } from '@mui/material';
@@ -168,7 +168,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { UserContext } from './Context';
 
 export default function Login() {
-  const { login } = useContext(UserContext);
+  const { login, currentUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [alertText, setAlertText] = useState("");
@@ -178,11 +178,14 @@ export default function Login() {
     password: ""
   });
 
+
   const validateForm = () => {
     let newErrors = {};
 
     if (!userData.name.trim()) {
       newErrors.name = "יש להזין שם משתמש";
+    } else if (userData.name.trim().length < 2) {
+      newErrors.name = "שם המשתמש חייב להכיל לפחות 2 תווים";
     }
 
     if (!userData.password) {

@@ -393,11 +393,18 @@ function NavBar() {
   // const { currentUser, logout } = React.useContext(UserContext);
   const { logout } = React.useContext(UserContext);
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-  console.log('current user local storage',currentUser);
-  
+  console.log('current user local storage', currentUser);
 
-  let pages = ['התחברות', 'דף הבית'];
-  if (currentUser?.type === 'admin') pages = ['התחברות', 'דף הבית', 'הוספת צימר'];
+  let pages = ['דף הבית', 'הזמנות'];
+  if (currentUser?.type === 'admin') pages.push('הוספת צימר');
+  if (!currentUser) pages.unshift('התחברות');
+
+  React.useEffect(()=>{
+    console.log('current in navbar',currentUser);
+    
+    if(currentUser != null)
+      navigate('/show-suites')
+  },[])
 
   const navigate = useNavigate();
 
@@ -434,13 +441,22 @@ function NavBar() {
   const handleLoginClick = () => {
     navigate('/');
   };
+ const handleMyOrdersClick = () => {
+  if (currentUser?.type === 'admin') {
+   navigate('/my-orders'); // עמוד שמציג את כל ההזמנות
+  } else {
+  navigate(`/user-orders/${currentUser._id}`);// עמוד אישי לפי מזהה המשתמש
+  }
+};
+
+ // navigate('/my-orders');
 
   return (
     <>
       <img
         src={process.env.PUBLIC_URL + '/images/suitesLogo.png'}
         style={{
-          zIndex:999,
+          zIndex: 999,
           left: '18px',
           top: '533px',
           opacity: '0.5',
@@ -500,9 +516,13 @@ function NavBar() {
                           <span onClick={handleHomeClick}>{page}</span>
                         ) : page === 'הוספת צימר' ? (
                           <span onClick={handleAddNewSuiteClick}>{page}</span>
-                        ) : (
-                          page
-                        )}
+                        ) : page === 'הזמנות' ? (
+                          <span onClick={handleMyOrdersClick}>{page}</span>
+
+                        )
+                          : (
+                            page
+                          )}
                       </Typography>
                     </MenuItem>
                   ))}
@@ -517,13 +537,18 @@ function NavBar() {
                       sx={{ my: 2, color: '#00B0FF', display: 'block' }}
                     >
                       <Typography sx={{ color: '#00B0FF' }}>
-                        {page === 'דף הבית' ? (
+                         {page === 'דף הבית' ? (
                           <span onClick={handleHomeClick}>{page}</span>
                         ) : page === 'הוספת צימר' ? (
                           <span onClick={handleAddNewSuiteClick}>{page}</span>
-                        ) : (
-                          page
-                        )}
+                        ) :
+
+                          page === 'הזמנות' ? (
+                            <span onClick={handleMyOrdersClick}>{page}</span>
+                          ) :
+                            (
+                              page
+                            )}
                       </Typography>
                     </Button>
                     {index < pages.length - 1 && (

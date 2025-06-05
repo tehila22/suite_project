@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignUp from "./SignUp";
 import Login from "./Login";
@@ -10,8 +10,13 @@ import UpdateSuite from "./UpdateSuite"; // עדכון הנתיב
 import EditProfile from "./EditProfile";
 import BookingForm from "./BookingForm";
 import MyOrders from "./MyOrders";
+import SuiteOrders from './SuiteOrders'; // ודא שהנתיב נכון
+import UserOrders from './UserOrders';
+import { UserContext } from "./Context";
+import ShowAllSuites from "./ShowAllSuites";
 
 export default function RouteComponent() {
+    // const { currentUser } = useContext(UserContext);
     return (
         <BrowserRouter>
             <NavBar />
@@ -26,7 +31,10 @@ export default function RouteComponent() {
                 <Route path='/update-suite/:id' element={<UpdateSuite />} />
                 <Route path="/edit-profile" element={<EditProfile />} />
                 <Route path="/booking/:id" element={<BookingForm />} />
-                <Route path="/myorders" element={<MyOrders />} />
+                <Route path="/my-orders" element={<MyOrders />} />
+                <Route path="/suite-orders/:suiteId" element={<SuiteOrders />} />
+                <Route path="/user-orders/:userId" element={<UserOrders />} />
+
 
             </Routes>
         </BrowserRouter>
